@@ -210,6 +210,14 @@ export default function App() {
       quantity: 1
     };
 
+    // 구글 스프레드시트가 0으로 시작하는 우편번호나 연락처를 숫자로 자동 전환해 맨 앞 0을 생략하는 현상을 방지합니다.
+    // 네트워크 전송용 페이로드에만 접두사(') 처리를 하여, 사용자 UI 화면 및 로컬 로그에는 깔끔하게 원본 값이 나타나도록 연동합니다.
+    const networkPayload = {
+      ...finalPayload,
+      phone: finalPayload.phone && finalPayload.phone.startsWith("0") ? `'${finalPayload.phone}` : finalPayload.phone,
+      postalCode: finalPayload.postalCode && finalPayload.postalCode.startsWith("0") ? `'${finalPayload.postalCode}` : finalPayload.postalCode
+    };
+
     try {
       let resJson: SubmissionResponse;
 
@@ -219,7 +227,7 @@ export default function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(finalPayload),
+          body: JSON.stringify(networkPayload),
         });
 
         if (!response.ok) {
@@ -240,7 +248,7 @@ export default function App() {
           headers: {
             "Content-Type": "text/plain;charset=utf-8",
           },
-          body: JSON.stringify(finalPayload),
+          body: JSON.stringify(networkPayload),
         });
 
         let directData: any = {};
@@ -894,12 +902,32 @@ export default function App() {
                     const element = document.getElementById("receipt-print-area");
                     if (!element) return;
                     try {
-                      const canvas = await html2canvas(element, {
+                      // Create a clone of the element to avoid transform/modal-scroll-scale issues
+                      const clone = element.cloneNode(true) as HTMLElement;
+                      clone.style.position = "absolute";
+                      clone.style.left = "-9999px";
+                      clone.style.top = "-9999px";
+                      clone.style.width = "450px"; // Ensure a consistent, beautiful width for the receipt
+                      clone.style.backgroundColor = "#ffffff";
+                      clone.style.transform = "none";
+                      clone.style.opacity = "1";
+                      clone.style.visibility = "visible";
+                      document.body.appendChild(clone);
+
+                      // Wait a brief moment to ensure layout is applied
+                      await new Promise((resolve) => setTimeout(resolve, 80));
+
+                      const canvas = await html2canvas(clone, {
                         backgroundColor: "#ffffff",
                         scale: 2,
                         logging: false,
-                        useCORS: true
+                        useCORS: true,
+                        allowTaint: true
                       });
+
+                      // Clean up clone
+                      document.body.removeChild(clone);
+
                       const dataUrl = canvas.toDataURL("image/png");
                       const link = document.createElement("a");
                       link.download = `bestdive_order_${selectedSubmission ? selectedSubmission.data.ordererName : "suit"}.png`;

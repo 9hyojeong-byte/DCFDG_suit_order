@@ -73,14 +73,25 @@ function doPost(e) {
     // 현재 일시 기록 (KST 대한민국 표준시 기준)
     var timestamp = Utilities.formatDate(new Date(), "GMT+9", "yyyy-MM-dd HH:mm:ss");
     
+    // 한국 우편번호 및 전화번호 등 0으로 시작하는 문자열의 맨 앞 0이 구글 시트에서 생략되는 현상을 방지하기 위해 싱글 쿼테이션(')을 붙여 텍스트로 보존합니다.
+    var postalCodeValue = (data.postalCode || "").toString();
+    if (postalCodeValue.length > 0 && postalCodeValue.charAt(0) === '0') {
+      postalCodeValue = "'" + postalCodeValue;
+    }
+    
+    var phoneValue = (data.phone || "").toString();
+    if (phoneValue.length > 0 && phoneValue.charAt(0) === '0' && !phoneValue.startsWith("'")) {
+      phoneValue = "'" + phoneValue;
+    }
+    
     // 전송 받은 값을 시트 열 순서에 맞춰 설정
     var rowData = [
       timestamp,
       data.ordererName || "",
       data.customsId || "",
-      data.postalCode || "",
+      postalCodeValue,
       data.address || "",
-      data.phone || "",
+      phoneValue,
       data.productName || "",
       data.liningOption || "",
       data.color || "",

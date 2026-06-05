@@ -56,6 +56,17 @@ async function startServer() {
         });
       }
 
+      // 구글 스프레드시트에서 0으로 시작하는 문자열(우편번호, 연락처 등)의 맨 앞 '0'이 숫자로 취급되어 생략되는 현상을 완벽히 방지합니다.
+      const formattedOrderData = {
+        ...orderData,
+        phone: orderData.phone && orderData.phone.toString().startsWith("0") && !orderData.phone.toString().startsWith("'")
+          ? `'${orderData.phone}` 
+          : orderData.phone,
+        postalCode: orderData.postalCode && orderData.postalCode.toString().startsWith("0") && !orderData.postalCode.toString().startsWith("'")
+          ? `'${orderData.postalCode}` 
+          : orderData.postalCode
+      };
+
       console.log(`Forwarding order data to Apps Script: ${targetUrl}`);
 
       // Forward to Google Apps Script
@@ -64,7 +75,7 @@ async function startServer() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify(formattedOrderData),
       });
 
       if (!response.ok) {
