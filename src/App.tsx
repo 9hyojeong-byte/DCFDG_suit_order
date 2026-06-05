@@ -548,11 +548,11 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 4. Lining Options (오픈셀 & 크롤즈셀) */}
+                {/* 4. Lining Options (오픈셀 & 클로즈셀) */}
                 <div id="field-liningOption" className="space-y-2">
                   <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block font-sans">수트 내피 원단 옵션</span>
                   <div className="grid grid-cols-2 gap-2">
-                    {(["오픈셀", "크롤즈셀"] as const).map((opt) => (
+                    {(["오픈셀", "클로즈셀"] as const).map((opt) => (
                       <button
                         type="button"
                         key={opt}
@@ -645,7 +645,7 @@ export default function App() {
                   </label>
                   <textarea
                     rows={4}
-                    placeholder="신체 치수 세부 기록, 등 지퍼 방향 옵션 변경, 로고 마킹 위치 요청, 특이 원단 색상 배색 조합 지시 사항 등 구체적인 제조 요구사항이 있을 경우 자유롭게 기록해주세요."
+                    placeholder="헤으응 프다갤짱 도겸짱"
                     value={formData.customNotes}
                     onChange={(e) => setFormData(prev => ({ ...prev, customNotes: e.target.value }))}
                     className="w-full text-sm bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-850 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 shadow-sm transition-all"

@@ -39,7 +39,7 @@ export const PRODUCT_PRESETS = [
 
 export const LINING_PRESETS = [
   "오픈셀",
-  "크롤즈셀"
+  "클로즈셀"
 ];
 
 export const COLOR_PRESETS = [
