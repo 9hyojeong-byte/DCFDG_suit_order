@@ -23,7 +23,7 @@ async function startServer() {
       
       // 구글 앱스크립트 웹앱 주소 기입란 (예: "https://script.google.com/macros/s/AKfycb.../exec")
       // 배포된 웹앱 주소를 아래 큰따옴표 안에 하드코딩해서 바로 넣으실 수 있습니다.
-      const HARDCODED_GOOGLE_SCRIPT_URL = "";
+      const HARDCODED_GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjOSzr0jESut4hj06S4QLWDYh5FZKIdoSuH6jRED6eqVLJifOOEJbCtl5sSueD4_3B/exec";
 
       const targetUrl = googleScriptUrl || HARDCODED_GOOGLE_SCRIPT_URL || process.env.GOOGLE_SCRIPT_URL;
 
