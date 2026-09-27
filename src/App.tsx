@@ -406,7 +406,6 @@ export default function App() {
             
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <span className="text-xs font-mono tracking-wider text-blue-600 font-bold uppercase">DC inside 프리다이빙 갤러리 짱</span>
                 <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">도겸업!! 베스트다이브 슈트 주문폼</h2>
               </div>
               <HelpCircle className="w-5 h-5 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors" />

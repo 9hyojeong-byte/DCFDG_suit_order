@@ -50,7 +50,7 @@ export function renderReceiptCanvas(submission: SavedSubmission): string {
 
   ctx.fillStyle = "#2563EB";
   ctx.font = "bold 11px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
-  ctx.fillText("DC inside 프리다이빙 갤러리 공식 수집 대장", width / 2, 100);
+  ctx.fillText("베스트다이브 공식 맞춤 주문서", width / 2, 100);
 
   // Issued Date
   ctx.fillStyle = "#64748B";
