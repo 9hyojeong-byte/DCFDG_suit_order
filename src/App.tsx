@@ -50,8 +50,8 @@ export default function App() {
     postalCode: "",
     address: "",
     phone: "",
-    productName: "고탄성페브릭 - ",
-    liningOption: "오픈셀",
+    productName: "",
+    liningOption: "-",
     color: "블랙",
     gender: "남성",
     thickness: "", 
@@ -61,10 +61,6 @@ export default function App() {
     supplyPrice: 0,
     customNotes: ""
   });
-
-  // Track product name 1-depth & 2-depth
-  const [productDepth1, setProductDepth1] = useState<"고탄성페브릭" | "SCS">("고탄성페브릭");
-  const [productDepth2, setProductDepth2] = useState("");
 
   // Keep track of custom input states
   const [isCustomColor, setIsCustomColor] = useState(false);
@@ -120,14 +116,6 @@ export default function App() {
       .catch((err) => console.log("Failed to load server mock submissions:", err));
   }, []);
 
-  // Sync combined product name
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      productName: productDepth2.trim() ? `${productDepth1} / ${productDepth2.trim()}` : `${productDepth1}`
-    }));
-  }, [productDepth1, productDepth2]);
-
   const validateForm = () => {
     const errors: Partial<Record<keyof OrderFormData, string>> = {};
     const regexCustoms = /^[pP]\d{12}$/; // Personal customs code: starts with P/p, 12 digits
@@ -157,20 +145,20 @@ export default function App() {
       errors.phone = "올바른 연락처 형식 (e.g. 010-1234-5678)을 작성해주세요.";
     }
 
-    if (!productDepth2.trim()) {
-      errors.productName = "직접 입력할 제품 상세 품목명을 기재해주세요 (2뎁스).";
+    if (!formData.productName.trim()) {
+      errors.productName = "상세 제품명을 입력해주세요.";
     }
 
     if (!formData.size.trim()) {
       errors.size = "사이즈를 직접 기입해주세요.";
     }
 
-    if (isCustomColor && !customColorText.trim()) {
-      errors.color = "직접 입력할 색상을 기재해주세요.";
-    }
-
     if (!formData.thickness.trim()) {
       errors.thickness = "네오프렌 두께를 직접 기입해주세요.";
+    }
+
+    if (isCustomColor && !customColorText.trim()) {
+      errors.color = "직접 입력할 색상을 기재해주세요.";
     }
     
     setFormErrors(errors);
@@ -194,10 +182,11 @@ export default function App() {
     setIsSubmitting(true);
 
     // Form final mapping
-    const finalProduct = `${productDepth1} / ${productDepth2.trim()}`;
-    const finalLining = formData.liningOption;
+    const finalProduct = formData.productName.trim();
+    const finalLining = formData.liningOption || "-";
     const finalColor = isCustomColor ? customColorText.trim() : formData.color;
-    const finalThickness = formData.thickness;
+    const finalThickness = formData.thickness.trim();
+    const finalSize = formData.size.trim();
 
     const finalPayload: OrderFormData = {
       ...formData,
@@ -205,6 +194,7 @@ export default function App() {
       liningOption: finalLining,
       color: finalColor,
       thickness: finalThickness,
+      size: finalSize,
       price: 0,
       supplyPrice: 0,
       quantity: 1
@@ -294,26 +284,25 @@ export default function App() {
         setSelectedSubmission(newSubmission);
 
         // Reset form inputs partially
-        setFormData(prev => ({
-          ...prev,
+        setFormData({
           ordererName: "",
           customsId: "",
           postalCode: "",
           address: "",
           phone: "",
-          customNotes: "",
-          liningOption: "오픈셀",
+          productName: "",
+          liningOption: "-",
           color: "블랙",
           gender: "남성",
           thickness: "",
           size: "",
           price: 0,
           supplyPrice: 0,
-          quantity: 1
-        }));
+          quantity: 1,
+          customNotes: ""
+        });
         
         // Reset state inputs
-        setProductDepth2("");
         setCustomColorText("");
         setIsCustomColor(false);
       }
@@ -466,47 +455,59 @@ export default function App() {
                   <h3 className="text-sm font-bold text-slate-800 tracking-wide uppercase font-sans">제품 상세 옵션</h3>
                 </div>
 
-                {/* 1. Product Name Preset (Structured 1-depth and 2-depth) */}
-                <div id="field-productName" className="space-y-3">
-                  <label className="text-xs text-slate-500 font-bold uppercase tracking-wider block">제작 제품 품목명 <span className="text-rose-500">*</span></label>
-                  
-                  <div className="space-y-2">
-                    <span className="text-[11px] text-slate-400 font-bold block">1뎁스: 분류 선택</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(["고탄성페브릭", "SCS"] as const).map((opt) => (
-                        <button
-                          type="button"
-                          key={opt}
-                          onClick={() => setProductDepth1(opt)}
-                          className={`py-2 px-3 text-xs md:text-sm font-bold rounded-lg border transition-all duration-200 cursor-pointer text-center ${
-                            productDepth1 === opt
-                              ? "bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-500/10"
-                              : "bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50"
-                          }`}
-                        >
-                          {opt}
-                        </button>
-                      ))}
+                {/* 1. 상세 제품명 입력 */}
+                <div id="field-productName" className="space-y-2.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                    <label className="text-xs text-slate-700 font-bold uppercase tracking-wider block">
+                      1. 상세 제품명 입력 <span className="text-rose-500">*</span>
+                    </label>
+                    <a
+                      href="https://smartstore.naver.com/moffmall"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold underline underline-offset-2 hover:opacity-85 transition-opacity"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      스마트스토어 바로가기 (moffmall)
+                    </a>
+                  </div>
+
+                  {/* 설명 안내 상자 */}
+                  <div className="p-3 bg-blue-50/70 border border-blue-200/80 rounded-lg text-xs space-y-1.5">
+                    <p className="text-slate-700 leading-relaxed">
+                      💡 <strong>설명:</strong>{" "}
+                      <a
+                        href="https://smartstore.naver.com/moffmall"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 font-bold underline hover:text-blue-800"
+                      >
+                        https://smartstore.naver.com/moffmall
+                      </a>{" "}
+                      여기에서 원하는 제품을 찾고, 해당 제품의 제품명을 복사해서 붙여넣기 하세요.
+                    </p>
+                    <div className="flex items-center gap-2 pt-0.5 text-blue-800 font-semibold">
+                      <span className="inline-block px-1.5 py-0.5 bg-blue-600 text-white rounded text-[10px] font-extrabold tracking-wide">30% 할인</span>
+                      <span>가격은 위 링크(스마트스토어)에서 찾으신 제품 가격에서 30% 할인된 가격으로 인지하시면 됩니다.</span>
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 pt-1">
-                    <span className="text-[11px] text-slate-400 font-bold block">2뎁스: 상세 제품명 입력</span>
-                    <input
-                      type="text"
-                      required
-                      placeholder="상세 제품 품목명을 직접 입력해 주세요 (예: 원피스 슈트, 자켓, 뷰티 레깅스 등)"
-                      value={productDepth2}
-                      onChange={(e) => setProductDepth2(e.target.value)}
-                      className={`w-full text-sm bg-white border ${formErrors.productName ? 'border-rose-500' : 'border-slate-300'} rounded-lg px-4 py-2.5 text-slate-850 placeholder:text-slate-450 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm`}
-                    />
-                    {formErrors.productName && <p className="text-[11px] text-rose-500 font-semibold">{formErrors.productName}</p>}
-                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="스마트스토어에서 복사한 제품명을 여기에 붙여넣어 주세요"
+                    value={formData.productName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, productName: e.target.value }))}
+                    className={`w-full text-sm bg-white border ${formErrors.productName ? 'border-rose-500 focus:ring-rose-500/10' : 'border-slate-300'} rounded-lg px-4 py-2.5 text-slate-850 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm`}
+                  />
+                  {formErrors.productName && <p className="text-[11px] text-rose-500 font-semibold">{formErrors.productName}</p>}
                 </div>
 
-                {/* 2. Gender Selection (Only Male and Female) */}
+                {/* 2. 성별 선택 */}
                 <div id="field-gender" className="space-y-2">
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block font-sans">성별 선택</span>
+                  <span className="text-xs text-slate-700 font-bold uppercase tracking-wider block font-sans">
+                    2. 성별 선택 <span className="text-rose-500">*</span>
+                  </span>
                   <div className="grid grid-cols-2 gap-2">
                     {(["남성", "여성"] as const).map((g) => (
                       <button
@@ -525,61 +526,46 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 3. Direct inputs side-by-side for sizing & thickness */}
+                {/* 3 & 4. 사이즈 입력 & 네오프렌 두께 입력 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Size Custom Text Input */}
+                  {/* 3. 사이즈 입력 */}
                   <div id="field-size" className="space-y-1.5">
-                    <label className="text-xs text-slate-500 font-bold uppercase tracking-wider block font-sans">사이즈 직접 입력 <span className="text-rose-500">*</span></label>
+                    <label className="text-xs text-slate-700 font-bold uppercase tracking-wider block font-sans">
+                      3. 사이즈 입력 <span className="text-rose-500">*</span>
+                    </label>
                     <input
                       type="text"
                       required
                       placeholder="본인의 사이즈를 직접 작성해 주세요 (예: M, L, ML 등)"
                       value={formData.size}
                       onChange={(e) => setFormData(prev => ({ ...prev, size: e.target.value }))}
-                      className={`w-full text-sm bg-white border ${formErrors.size ? 'border-rose-500 focus:ring-rose-500/10' : 'border-slate-300'} rounded-lg px-4 py-2.5 text-slate-850 placeholder:text-slate-450 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm`}
+                      className={`w-full text-sm bg-white border ${formErrors.size ? 'border-rose-500 focus:ring-rose-500/10' : 'border-slate-300'} rounded-lg px-4 py-2.5 text-slate-850 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm`}
                     />
                     {formErrors.size && <p className="text-[11px] text-rose-500 font-semibold">{formErrors.size}</p>}
                   </div>
 
-                  {/* Neoprene Thickness Custom Text Input */}
+                  {/* 4. 네오프렌 두께 입력 */}
                   <div id="field-thickness" className="space-y-1.5">
-                    <label className="text-xs text-slate-500 font-bold uppercase tracking-wider block font-sans">네오프렌 두께 직접 입력 <span className="text-rose-500">*</span></label>
+                    <label className="text-xs text-slate-700 font-bold uppercase tracking-wider block font-sans">
+                      4. 네오프렌 두께 입력 <span className="text-rose-500">*</span>
+                    </label>
                     <input
                       type="text"
                       required
                       placeholder="두께를 직접 작성해 주세요 (예: 2mm, 3mm, 5mm 등)"
                       value={formData.thickness}
                       onChange={(e) => setFormData(prev => ({ ...prev, thickness: e.target.value }))}
-                      className={`w-full text-sm bg-white border ${formErrors.thickness ? 'border-rose-500 focus:ring-rose-500/10' : 'border-slate-300'} rounded-lg px-4 py-2.5 text-slate-850 placeholder:text-slate-450 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm`}
+                      className={`w-full text-sm bg-white border ${formErrors.thickness ? 'border-rose-500 focus:ring-rose-500/10' : 'border-slate-300'} rounded-lg px-4 py-2.5 text-slate-850 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm`}
                     />
                     {formErrors.thickness && <p className="text-[11px] text-rose-500 font-semibold">{formErrors.thickness}</p>}
                   </div>
                 </div>
 
-                {/* 4. Lining Options (오픈셀 & 클로즈셀) */}
-                <div id="field-liningOption" className="space-y-2">
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block font-sans">수트 내피 원단 옵션</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(["오픈셀", "클로즈셀"] as const).map((opt) => (
-                      <button
-                        type="button"
-                        key={opt}
-                        onClick={() => setFormData(prev => ({ ...prev, liningOption: opt }))}
-                        className={`py-2.5 px-4 text-xs md:text-sm font-bold rounded-lg border transition-all duration-200 cursor-pointer text-center ${
-                          formData.liningOption === opt
-                            ? "bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-500/10"
-                            : "bg-white border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 5. Custom Color Selection */}
+                {/* 5. 컬러 선택 */}
                 <div id="field-color" className="space-y-3">
-                  <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block font-sans">수트 전면/측면 메인 컬러 선택</span>
+                  <span className="text-xs text-slate-700 font-bold uppercase tracking-wider block font-sans">
+                    5. 컬러 선택 <span className="text-rose-500">*</span>
+                  </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {COLOR_PRESETS.map((col, idx) => (
                       <button
@@ -636,20 +622,11 @@ export default function App() {
                   </AnimatePresence>
                 </div>
 
-              </div>
-
-              {/* SECTION C: 특별 요구사항 및 커스텀 기재 */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                  <FileText className="w-4 h-4 text-blue-600" />
-                  <h3 className="text-sm font-bold text-slate-800 tracking-wide uppercase font-sans">특별 요구사항 및 상세 지시</h3>
-                </div>
-
-                {/* Custom Notes & Special Requirements requests */}
-                <div id="field-customNotes" className="space-y-1.5">
-                  <label className="text-xs text-slate-500 font-bold uppercase tracking-wider flex items-center justify-between">
-                    <span>커스텀 요구사항 및 제조 지시 기재</span>
-                    <span className="text-[10px] text-slate-400 font-medium">상세 기재</span>
+                {/* 6. 추가 요구사항 작성 */}
+                <div id="field-customNotes" className="space-y-1.5 pt-2 border-t border-slate-100">
+                  <label className="text-xs text-slate-700 font-bold uppercase tracking-wider flex items-center justify-between">
+                    <span>6. 추가 요구사항 작성</span>
+                    <span className="text-[10px] text-slate-400 font-medium">선택 사항</span>
                   </label>
                   <textarea
                     rows={4}
@@ -659,6 +636,7 @@ export default function App() {
                     className="w-full text-sm bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-850 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 shadow-sm transition-all"
                   />
                 </div>
+
               </div>
 
               {/* Server actions footer */}
@@ -739,13 +717,13 @@ export default function App() {
                 <div className="space-y-2 text-xs">
                   {/* Form detail items */}
                   <div className="flex justify-between">
-                    <span className="text-slate-500">품목명:</span>
+                    <span className="text-slate-500">제품명:</span>
                     <span className="text-slate-800 font-bold max-w-[200px] truncate text-right">
-                      {productDepth1} / {productDepth2 || "[상세 제품명 대기]"}
+                      {formData.productName || "[상세 제품명 대기]"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">성별사양:</span>
+                    <span className="text-slate-500">성별:</span>
                     <span className="text-slate-800 font-medium">{formData.gender || "미정"}</span>
                   </div>
                   <div className="flex justify-between">
@@ -755,12 +733,6 @@ export default function App() {
                   <div className="flex justify-between">
                     <span className="text-slate-500">원단두께:</span>
                     <span className="text-slate-800 font-medium">{formData.thickness || "[직접 입력 대기]"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">내피구성:</span>
-                    <span className="text-slate-800 font-medium max-w-[200px] truncate text-right">
-                      {formData.liningOption}
-                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500">스킨컬러:</span>
@@ -776,6 +748,14 @@ export default function App() {
                       )}
                     </span>
                   </div>
+                </div>
+
+                {/* 가격 안내 배너 */}
+                <div className="bg-blue-50/80 border border-blue-200/80 rounded-md p-2 text-[11px] text-blue-900 flex items-center justify-between">
+                  <span className="font-bold flex items-center gap-1">
+                    <span>🏷️</span> 가격 혜택
+                  </span>
+                  <span className="font-bold text-blue-700">스마트스토어 기준 30% DC</span>
                 </div>
 
                 <div className="border-t border-dashed border-slate-250 pt-3">
@@ -856,15 +836,15 @@ export default function App() {
                   <p className="text-slate-300">----------------------------------------</p>
 
                   <div className="flex justify-between text-[13px] font-bold text-slate-950 bg-slate-50 p-2 rounded border border-slate-200">
-                    <span>주문 제품 사양:</span>
-                    <span>{selectedSubmission.data.productName}</span>
+                    <span>주문 제품명:</span>
+                    <span className="max-w-[210px] truncate text-right font-extrabold">{selectedSubmission.data.productName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>성별 적용 구조:</span>
-                    <span className="text-slate-950">{selectedSubmission.data.gender}</span>
+                    <span>성별:</span>
+                    <span className="text-slate-950 font-bold">{selectedSubmission.data.gender}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>기제 사이즈 규정:</span>
+                    <span>사이즈:</span>
                     <span className="text-slate-950 font-semibold">{selectedSubmission.data.size}</span>
                   </div>
                   <div className="flex justify-between">
@@ -872,12 +852,12 @@ export default function App() {
                     <span className="text-slate-950">{selectedSubmission.data.thickness}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>적용 사양 내피:</span>
-                    <span className="text-slate-950">{selectedSubmission.data.liningOption}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>스킨 원 톤 컬러:</span>
+                    <span>선택 컬러:</span>
                     <span className="text-slate-950 font-medium">{selectedSubmission.data.color}</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] text-blue-700 font-semibold">
+                    <span>가격 적용 혜택:</span>
+                    <span>스마트스토어 판매가 기준 30% 할인</span>
                   </div>
                   <p className="text-slate-300">----------------------------------------</p>
                   
