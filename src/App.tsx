@@ -30,7 +30,8 @@ import {
   CreditCard,
   Download
 } from "lucide-react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
+import { renderReceiptCanvas } from "./receiptCanvas";
 import { 
   OrderFormData, 
   SubmissionResponse, 
@@ -84,6 +85,7 @@ export default function App() {
 
   // Status transitions
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingImage, setIsSavingImage] = useState(false);
   const [submitResult, setSubmitResult] = useState<SubmissionResponse | null>(null);
 
   // Sync historical submissions to local storage
@@ -334,6 +336,57 @@ export default function App() {
       } catch (err) {
         console.error("Failed to clear server mocks", err);
       }
+    }
+  };
+
+  const handleDownloadReceiptImage = async () => {
+    if (!selectedSubmission) return;
+    setIsSavingImage(true);
+
+    try {
+      let dataUrl = "";
+      const element = document.getElementById("receipt-print-area");
+
+      if (element) {
+        try {
+          dataUrl = await toPng(element, {
+            backgroundColor: "#ffffff",
+            pixelRatio: 2,
+            skipFonts: true,
+            cacheBust: true,
+          });
+        } catch (toPngErr) {
+          console.warn("DOM toPng failed, falling back to pure canvas renderer:", toPngErr);
+        }
+      }
+
+      // If toPng returned empty or failed, use canvas 2D fallback
+      if (!dataUrl || dataUrl.length < 50) {
+        dataUrl = renderReceiptCanvas(selectedSubmission);
+      }
+
+      const link = document.createElement("a");
+      const safeName = (selectedSubmission.data.ordererName || "suit").replace(/[^a-zA-Z0-9가-힣]/g, "");
+      link.download = `bestdive_order_${safeName || "suit"}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Image generation error:", err);
+      try {
+        const emergencyDataUrl = renderReceiptCanvas(selectedSubmission);
+        const link = document.createElement("a");
+        link.download = `bestdive_order_${selectedSubmission.data.ordererName || "suit"}.png`;
+        link.href = emergencyDataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (finalErr) {
+        alert("이미지 저장에 실패했습니다. 다시 시도해 주세요.");
+      }
+    } finally {
+      setIsSavingImage(false);
     }
   };
 
@@ -878,52 +931,28 @@ export default function App() {
               {/* Action operations inside Modal footer */}
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <button
-                  onClick={async () => {
-                    const element = document.getElementById("receipt-print-area");
-                    if (!element) return;
-                    try {
-                      // Create a clone of the element to avoid transform/modal-scroll-scale issues
-                      const clone = element.cloneNode(true) as HTMLElement;
-                      clone.style.position = "absolute";
-                      clone.style.left = "-9999px";
-                      clone.style.top = "-9999px";
-                      clone.style.width = "450px"; // Ensure a consistent, beautiful width for the receipt
-                      clone.style.backgroundColor = "#ffffff";
-                      clone.style.transform = "none";
-                      clone.style.opacity = "1";
-                      clone.style.visibility = "visible";
-                      document.body.appendChild(clone);
-
-                      // Wait a brief moment to ensure layout is applied
-                      await new Promise((resolve) => setTimeout(resolve, 80));
-
-                      const canvas = await html2canvas(clone, {
-                        backgroundColor: "#ffffff",
-                        scale: 2,
-                        logging: false,
-                        useCORS: true,
-                        allowTaint: true
-                      });
-
-                      // Clean up clone
-                      document.body.removeChild(clone);
-
-                      const dataUrl = canvas.toDataURL("image/png");
-                      const link = document.createElement("a");
-                      link.download = `bestdive_order_${selectedSubmission ? selectedSubmission.data.ordererName : "suit"}.png`;
-                      link.href = dataUrl;
-                      link.click();
-                    } catch (err) {
-                      console.error("Image generation failed:", err);
-                      alert("이미지 저장을 실패했습니다.");
-                    }
-                  }}
-                  className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-sm"
+                  type="button"
+                  disabled={isSavingImage}
+                  onClick={handleDownloadReceiptImage}
+                  className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-sm"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  주문서 이미지 저장
+                  {isSavingImage ? (
+                    <>
+                      <svg className="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      이미지 생성 중...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      주문서 이미지 저장
+                    </>
+                  )}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setSelectedSubmission(null)}
                   className="py-2.5 px-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-lg flex items-center justify-center cursor-pointer transition-colors shadow-sm"
                 >
