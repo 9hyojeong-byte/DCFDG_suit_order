@@ -670,42 +670,10 @@ export default function App() {
                 </div>
 
                 {/* 1. 상세 제품명 입력 */}
-                <div id="field-productName" className="space-y-2.5">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                    <label className="text-xs text-slate-700 font-bold uppercase tracking-wider block">
-                      1. 상세 제품명 입력 <span className="text-rose-500">*</span>
-                    </label>
-                    <a
-                      href="https://smartstore.naver.com/moffmall"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold underline underline-offset-2 hover:opacity-85 transition-opacity"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      스마트스토어 바로가기 (moffmall)
-                    </a>
-                  </div>
-
-                  {/* 설명 안내 상자 */}
-                  <div className="p-3 bg-blue-50/70 border border-blue-200/80 rounded-lg text-xs space-y-1.5">
-                    <p className="text-slate-700 leading-relaxed">
-                      💡 <strong>설명:</strong>{" "}
-                      <a
-                        href="https://smartstore.naver.com/moffmall"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 font-bold underline hover:text-blue-800"
-                      >
-                        https://smartstore.naver.com/moffmall
-                      </a>{" "}
-                      여기에서 원하는 제품을 찾고, 해당 제품의 제품명을 복사해서 붙여넣기 하세요.
-                    </p>
-                    <div className="flex items-center gap-2 pt-0.5 text-blue-800 font-semibold">
-                      <span className="inline-block px-1.5 py-0.5 bg-blue-600 text-white rounded text-[10px] font-extrabold tracking-wide">33% 할인</span>
-                      <span>가격은 위 링크(스마트스토어)에서 찾으신 제품 가격에서 33% 할인된 가격으로 인지하시면 됩니다.</span>
-                    </div>
-                  </div>
-
+                <div id="field-productName" className="space-y-1.5">
+                  <label className="text-xs text-slate-700 font-bold uppercase tracking-wider block">
+                    1. 상세 제품명 입력 <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="text"
                     required
