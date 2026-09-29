@@ -405,7 +405,28 @@ export default function App() {
 
 
       {/* Main Content Area */}
-      <main className="max-w-6xl mx-auto px-4 pt-8">
+      <main className="max-w-6xl mx-auto px-4 pt-6 md:pt-8">
+
+        {/* 0. PAGE TITLE (최상단 타이틀) */}
+        <div className="mb-6 pb-4 border-b border-slate-200/90 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-100 text-blue-700 tracking-wider">
+                BESTDIVE
+              </span>
+              <span className="text-xs font-semibold text-slate-500">Bespoke Suit Order</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+              이도겸 트레이너 베스트다이브 슈트 주문폼
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              33% 특별 할인 접수중
+            </span>
+          </div>
+        </div>
 
         {/* 1. TOP NOTICE & ORDER GUIDE SECTION */}
         <section className="mb-8 bg-gradient-to-br from-blue-50/90 via-indigo-50/40 to-white border border-blue-200/90 rounded-2xl p-6 md:p-7 shadow-sm">
@@ -566,9 +587,10 @@ export default function App() {
           {/* Main Order Survey Form (Col span 7) */}
           <div className="lg:col-span-7 bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8 self-stretch">
             
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">도겸업!! 베스트다이브 슈트 주문폼</h2>
+                <span className="text-[11px] font-bold text-blue-600 tracking-wider uppercase">Order Form</span>
+                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">주문서 작성</h2>
               </div>
               <HelpCircle className="w-5 h-5 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors" />
             </div>
@@ -812,7 +834,7 @@ export default function App() {
                   </label>
                   <textarea
                     rows={4}
-                    placeholder="도겸짱짱맨"
+                    placeholder="추가 요구사항이나 기타 전달사항을 작성해주세요"
                     value={formData.customNotes}
                     onChange={(e) => setFormData(prev => ({ ...prev, customNotes: e.target.value }))}
                     className="w-full text-sm bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-850 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 shadow-sm transition-all"

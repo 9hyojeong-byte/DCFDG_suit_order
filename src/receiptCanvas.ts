@@ -46,7 +46,7 @@ export function renderReceiptCanvas(submission: SavedSubmission): string {
   // Title section
   ctx.fillStyle = "#1E293B";
   ctx.font = "bold 20px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
-  ctx.fillText("도겸업!! 베스트다이브 슈트 주문서", width / 2, 80);
+  ctx.fillText("이도겸 트레이너 베스트다이브 슈트 주문서", width / 2, 80);
 
   ctx.fillStyle = "#2563EB";
   ctx.font = "bold 11px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
