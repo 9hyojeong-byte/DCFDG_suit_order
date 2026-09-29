@@ -139,7 +139,7 @@ export function renderReceiptCanvas(submission: SavedSubmission): string {
   ctx.textAlign = "left";
   ctx.fillStyle = "#2563EB";
   ctx.font = "bold 11px 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
-  ctx.fillText("■ 제품 상세 옵션 (스마트스토어 30% 할인)", 32, currentY);
+  ctx.fillText("■ 제품 상세 옵션 (스마트스토어 33% 할인)", 32, currentY);
   currentY += 20;
 
   drawRow("1. 상세 제품명", submission.data.productName, true);
@@ -147,7 +147,7 @@ export function renderReceiptCanvas(submission: SavedSubmission): string {
   drawRow("3. 사이즈", submission.data.size || "-");
   drawRow("4. 네오프렌 두께", submission.data.thickness || "-");
   drawRow("5. 스킨 컬러", submission.data.color || "-");
-  drawRow("가격 적용 혜택", "스마트스토어 정가 기준 30% 할인 적용", true);
+  drawRow("가격 적용 혜택", "스마트스토어 정가 기준 33% 할인 적용", true);
 
   drawDivider(currentY + 5);
   currentY += 25;

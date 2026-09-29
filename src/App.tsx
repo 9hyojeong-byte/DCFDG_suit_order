@@ -539,8 +539,8 @@ export default function App() {
                       여기에서 원하는 제품을 찾고, 해당 제품의 제품명을 복사해서 붙여넣기 하세요.
                     </p>
                     <div className="flex items-center gap-2 pt-0.5 text-blue-800 font-semibold">
-                      <span className="inline-block px-1.5 py-0.5 bg-blue-600 text-white rounded text-[10px] font-extrabold tracking-wide">30% 할인</span>
-                      <span>가격은 위 링크(스마트스토어)에서 찾으신 제품 가격에서 30% 할인된 가격으로 인지하시면 됩니다.</span>
+                      <span className="inline-block px-1.5 py-0.5 bg-blue-600 text-white rounded text-[10px] font-extrabold tracking-wide">33% 할인</span>
+                      <span>가격은 위 링크(스마트스토어)에서 찾으신 제품 가격에서 33% 할인된 가격으로 인지하시면 됩니다.</span>
                     </div>
                   </div>
 
@@ -682,7 +682,7 @@ export default function App() {
                   </label>
                   <textarea
                     rows={4}
-                    placeholder="헤으응 프다갤짱 도겸짱"
+                    placeholder="도겸짱짱맨"
                     value={formData.customNotes}
                     onChange={(e) => setFormData(prev => ({ ...prev, customNotes: e.target.value }))}
                     className="w-full text-sm bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-850 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 shadow-sm transition-all"
@@ -807,7 +807,7 @@ export default function App() {
                   <span className="font-bold flex items-center gap-1">
                     <span>🏷️</span> 가격 혜택
                   </span>
-                  <span className="font-bold text-blue-700">스마트스토어 기준 30% DC</span>
+                  <span className="font-bold text-blue-700">스마트스토어 기준 33% DC</span>
                 </div>
 
                 <div className="border-t border-dashed border-slate-250 pt-3">
@@ -909,7 +909,7 @@ export default function App() {
                   </div>
                   <div className="flex justify-between text-[11px] text-blue-700 font-semibold">
                     <span>가격 적용 혜택:</span>
-                    <span>스마트스토어 판매가 기준 30% 할인</span>
+                    <span>스마트스토어 판매가 기준 33% 할인</span>
                   </div>
                   <p className="text-slate-300">----------------------------------------</p>
                   
