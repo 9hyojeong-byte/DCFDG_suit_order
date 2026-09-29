@@ -28,7 +28,9 @@ import {
   Printer, 
   X,
   CreditCard,
-  Download
+  Download,
+  Megaphone,
+  MessageCircle
 } from "lucide-react";
 import { toPng } from "html-to-image";
 import { renderReceiptCanvas } from "./receiptCanvas";
@@ -87,6 +89,13 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingImage, setIsSavingImage] = useState(false);
   const [submitResult, setSubmitResult] = useState<SubmissionResponse | null>(null);
+  const [copiedAccount, setCopiedAccount] = useState(false);
+
+  const handleCopyAccount = () => {
+    navigator.clipboard.writeText("3333385224522");
+    setCopiedAccount(true);
+    setTimeout(() => setCopiedAccount(false), 2000);
+  };
 
   // Sync historical submissions to local storage
   useEffect(() => {
@@ -397,6 +406,159 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-4 pt-8">
+
+        {/* 1. TOP NOTICE & ORDER GUIDE SECTION */}
+        <section className="mb-8 bg-gradient-to-br from-blue-50/90 via-indigo-50/40 to-white border border-blue-200/90 rounded-2xl p-6 md:p-7 shadow-sm">
+          <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-blue-200/70">
+            <span className="p-2 bg-blue-600 text-white rounded-lg shadow-sm">
+              <Megaphone className="w-5 h-5" />
+            </span>
+            <div>
+              <h2 className="text-lg md:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+                공지사항
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-600 text-white tracking-normal">
+                  필독
+                </span>
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">주문 전 반드시 아래 주문 방법과 계좌 정보를 확인해 주세요.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 좌측: [주문 방법] 및 [입금계좌] */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5 mb-3">
+                  <span className="w-1.5 h-4 bg-blue-600 rounded-full inline-block"></span>
+                  [주문 방법]
+                </h3>
+                <ol className="space-y-2.5 text-xs text-slate-700 leading-relaxed font-medium">
+                  <li className="flex items-start gap-2.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white font-bold text-[11px] flex items-center justify-center mt-0.5 shadow-xs">
+                      1
+                    </span>
+                    <div className="space-y-1">
+                      <a
+                        href="https://smartstore.naver.com/moffmall"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 underline font-bold transition-colors"
+                      >
+                        https://smartstore.naver.com/moffmall
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <p className="text-slate-600">여기에서 원하는 제품을 찾고, 입금폼 입력을 진행하세요.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white font-bold text-[11px] flex items-center justify-center mt-0.5 shadow-xs">
+                      2
+                    </span>
+                    <p className="text-slate-600 mt-0.5">
+                      해당 제품의 제품명을 복사해서 제품명으로 입력해주세요.
+                    </p>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white font-bold text-[11px] flex items-center justify-center mt-0.5 shadow-xs">
+                      3
+                    </span>
+                    <p className="text-slate-600 mt-0.5">
+                      해당 제품의 가격에서 <strong className="text-blue-700 font-bold">33% 할인된 금액</strong>을 아래 계좌로 입금해주세요.
+                    </p>
+                  </li>
+                </ol>
+              </div>
+
+              {/* [입금계좌] 카드 */}
+              <div className="bg-white border border-blue-200/90 rounded-xl p-4 shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <CreditCard className="w-4 h-4 text-blue-600" />
+                    [입금계좌]
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyAccount}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-md transition-colors cursor-pointer"
+                  >
+                    {copiedAccount ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        <span className="text-emerald-700 font-bold">복사 완료!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>계좌번호 복사</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <div className="bg-slate-50 border border-slate-200/80 rounded-lg p-2.5 space-y-1">
+                  <div className="font-mono font-extrabold text-sm md:text-base text-slate-900 tracking-wider">
+                    3333385224522 <span className="font-sans text-xs font-bold text-blue-700 ml-1">카카오뱅크</span>
+                  </div>
+                  <div className="text-xs text-slate-600">
+                    예금주: <strong className="text-slate-900 font-bold">디엘엠씨(dlmc)</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 우측: [주문 관련 문의사항] */}
+            <div className="bg-white/90 border border-blue-200/90 rounded-xl p-5 flex flex-col justify-between shadow-xs">
+              <div className="space-y-3.5">
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <span className="w-1.5 h-4 bg-indigo-600 rounded-full inline-block"></span>
+                  [주문 관련 문의사항]
+                </h3>
+
+                <div className="space-y-2 text-xs text-slate-700 leading-relaxed font-medium">
+                  <div className="flex items-center gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200/70">
+                    <User className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>문의 : <strong className="text-slate-900 font-bold">이도겸트레이너</strong></span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200/70">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-slate-500 shrink-0" />
+                      <span>유선 : <strong className="text-slate-900 font-bold">010-3824-6567</strong></span>
+                    </div>
+                    <a
+                      href="tel:010-3824-6567"
+                      className="px-2 py-0.5 text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 transition-colors"
+                    >
+                      전화걸기
+                    </a>
+                  </div>
+
+                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-lg text-amber-900 space-y-1">
+                    <div className="font-bold flex items-center gap-1.5 text-xs text-amber-950">
+                      <MessageCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                      주문 후 오픈채팅 입장 / 코드: <span className="bg-amber-200 text-amber-950 px-1.5 py-0.5 rounded font-mono font-extrabold text-[12px]">1231</span>
+                    </div>
+                    <p className="text-[11px] text-amber-800">
+                      주문서 접수 및 입금 후 오픈채팅방에 입장해 주세요.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 mt-2">
+                <a
+                  href="https://open.kakao.com/o/gqd3A2Pi"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-[#FEE500] hover:bg-[#FDD835] text-[#191919] font-bold text-xs rounded-xl shadow-xs transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 text-[#191919]" />
+                  <span>카카오톡 오픈채팅 입장하기 (코드: 1231)</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#191919]/70" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* 2. CORE TWO-COLUMN LAYOUT: SURVING FORM & PREVIEW/INSPECTOR */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
