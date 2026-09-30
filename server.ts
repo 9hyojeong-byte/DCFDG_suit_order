@@ -57,8 +57,12 @@ async function startServer() {
       }
 
       // 구글 스프레드시트에서 0으로 시작하는 문자열(우편번호, 연락처 등)의 맨 앞 '0'이 숫자로 취급되어 생략되는 현상을 완벽히 방지합니다.
+      // 또한 구글 시트 저장 시 주문자명 뒤에 (33%)가 안전하게 부착되도록 처리합니다.
       const formattedOrderData = {
         ...orderData,
+        ordererName: orderData.ordererName && !orderData.ordererName.includes("(33%)")
+          ? `${orderData.ordererName.trim()} (33%)`
+          : orderData.ordererName,
         phone: orderData.phone && orderData.phone.toString().startsWith("0") && !orderData.phone.toString().startsWith("'")
           ? `'${orderData.phone}` 
           : orderData.phone,

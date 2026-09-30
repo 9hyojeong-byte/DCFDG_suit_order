@@ -84,10 +84,16 @@ function doPost(e) {
       phoneValue = "'" + phoneValue;
     }
     
+    // 주문자 이름 뒤에 (33%) 부착 보장
+    var ordererNameValue = (data.ordererName || "").toString().trim();
+    if (ordererNameValue && ordererNameValue.indexOf("(33%)") === -1) {
+      ordererNameValue = ordererNameValue + " (33%)";
+    }
+
     // 전송 받은 값을 시트 열 순서에 맞춰 설정
     var rowData = [
       timestamp,
-      data.ordererName || "",
+      ordererNameValue,
       data.customsId || "",
       postalCodeValue,
       data.address || "",

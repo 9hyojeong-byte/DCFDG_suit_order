@@ -212,9 +212,10 @@ export default function App() {
     };
 
     // 구글 스프레드시트가 0으로 시작하는 우편번호나 연락처를 숫자로 자동 전환해 맨 앞 0을 생략하는 현상을 방지합니다.
-    // 네트워크 전송용 페이로드에만 접두사(') 처리를 하여, 사용자 UI 화면 및 로컬 로그에는 깔끔하게 원본 값이 나타나도록 연동합니다.
+    // 구글 시트 저장용 전송 페이로드에만 주문자 이름 뒤에 '(33%)'를 부착하여, 사용자 화면/영수증에는 순수 이름만 보이고 시트에만 저장되도록 연동합니다.
     const networkPayload = {
       ...finalPayload,
+      ordererName: finalPayload.ordererName ? `${finalPayload.ordererName.trim()} (33%)` : finalPayload.ordererName,
       phone: finalPayload.phone && finalPayload.phone.startsWith("0") ? `'${finalPayload.phone}` : finalPayload.phone,
       postalCode: finalPayload.postalCode && finalPayload.postalCode.startsWith("0") ? `'${finalPayload.postalCode}` : finalPayload.postalCode
     };
